@@ -1,6 +1,6 @@
 import Compiler
 
-projectPath = "C:/Users/...
+projectPath = "C:/Users/..."
 compilePath = "C:/Users/..."
 
 compiler = Compiler.Compiler(projectPath,compilePath)
