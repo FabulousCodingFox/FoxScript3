@@ -1,0 +1,7 @@
+INFO:root:Compiler: Validated all contents of compiler.json
+INFO:root:Project: Validated all contents of project.json
+INFO:root:"Example" by "FabulousFox" for Minecraft Version 1.16: Example Project
+WARNING:root:Project: Versions dont match! The Programm is written for FoxScript3 Version 0.0.2 and the Compiler is on Version 0.0.3
+INFO:root:Project: Reading File main:load
+INFO:root:Project: Compiling File main:load
+INFO:root:Project: Created Files
