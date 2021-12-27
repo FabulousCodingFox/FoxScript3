@@ -24,7 +24,7 @@ class Compiler:
     def __init__(self,project_path,compile_path) -> None:
         self.project_path=project_path
         self.compile_path=compile_path
-        self.fs_version = "0.0.3"
+        self.fs_version = "3.0.4"
 
         try:
             with open(_dir_+"compiler.json") as file:self.compiler_config=json.load(file)
@@ -79,8 +79,9 @@ class Compiler:
     
     def compile(self) -> None:
         for f in self.allFiles:
-            f.compile(self.keywords)
-            logging.info(f"Project: Compiling File {f.namespace}:{f.path}")
+            addFunctions = f.compile(self.keywords)
+            self.allFiles=self.allFiles+addFunctions
+            
 
     
     def create(self) -> None:
@@ -118,5 +119,8 @@ class Compiler:
 
         logging.info("Project: Created Files")
 
-
+    def main(self):
+        self.readProjectFiles()
+        self.compile()
+        self.create()
 
