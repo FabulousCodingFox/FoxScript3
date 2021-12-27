@@ -1,6 +1,12 @@
 # FoxScript3
 FoxScript3 is the third iteraton of the MC Datapack toolkit. The new and improved version features a lot of helpfull shortcuts for .mcfunction files!
 
+##Create your OWN COMMANDS
+using the simple JSON structure, you can create your own command in just minutes!
+
+##Better Loops and If Statements
+using the simple In-File Function declarations you can easily write lopps in the same file without having 10.000+ extra files!
+
 # Quickstart
 
 ```python
