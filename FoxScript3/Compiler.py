@@ -1,4 +1,4 @@
-import logging,json,os,McFunction,Keyword
+import logging,json,os,McFunction,Keyword,shutil
 
 _file_ = __file__.replace("\\","/")
 _dir_ = _file_.replace(_file_.split("/")[-1],"")
@@ -24,7 +24,7 @@ class Compiler:
     def __init__(self,project_path,compile_path) -> None:
         self.project_path=project_path
         self.compile_path=compile_path
-        self.fs_version = "3.0.6"
+        self.fs_version = "3.0.7"
 
         try:
             with open(_dir_+"compiler.json") as file:self.compiler_config=json.load(file)
@@ -50,6 +50,9 @@ class Compiler:
         allFiles = []
 
         for (root,dirs,files) in os.walk(self.project_path,topdown=False):
+
+            if "#tags" in root:
+                continue
 
             for file in files:
                 
@@ -134,8 +137,29 @@ class Compiler:
                 json.dump(tickcontent, tick)
         logging.info("Project: Created Files")
 
+        for (root,dirs,files) in os.walk(self.project_path,topdown=False):
+            if "#tags" in root:
+                continue
 
+            for tag in dirs:
+                if tag.lower()=="#tags":
+                    dir = os.path.join(root,tag).replace("\\","/")+"/"
+                    namespace = dir.split("/")[-3]
+                    logging.debug("Found tag "+dir)
+                    os.mkdir(f"{self.compile_path}/data/{namespace}/tags/")
+                    target=f"{self.compile_path}/data/{namespace}/tags/"
+                    #shutil.copy(dir,target)
+                    #os.rename(f"{self.compile_path}/data/{namespace}/#tags/","tags")
 
+                    for (nroot,ndirs,nfiles) in os.walk(dir,topdown=True):
+                        for ndir in ndirs:
+                            os.mkdir(target + os.path.join(nroot,ndir).replace("\\","/").replace(dir,""))
+                        for nfile in nfiles:
+                            with open(os.path.join(nroot,nfile),"r") as original:
+                                with open(target + os.path.join(nroot,nfile).replace("\\","/").replace(dir,""),"w") as new:
+                                    new.write(original.read())
+
+        logging.info("Project: Moved tags to the right loacation")
 
     def main(self):
         self.readProjectFiles()
