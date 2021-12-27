@@ -16,6 +16,14 @@ class McFunction:
                 for alias in kw.aliases:
 
                     index=line.find(alias)
+
+                    if line.lstrip().startswith(alias):
+                        index = 0
+                    elif "execute" in line and line.split(" run ")[-1].startswith(alias):
+                        index = line.find(line.split(" run ")[-1])
+                    else:
+                        index = -1
+
                     res=line
 
                     if index!=-1:

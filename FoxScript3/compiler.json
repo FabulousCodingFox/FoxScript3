@@ -43,6 +43,21 @@
                 "1==warn;2!=null": "say [WARN]: %[overflow]",
                 "1==debug;2!=null": "say [DEBUG]: %[overflow]"
             }
+        },
+
+        "dummy":{
+            "id":"dummy",
+            "aliases":["dummy"],
+            "openEnding": false,
+            "syntax":{
+                "1":{
+                    "essential": true,
+                    "possibilities": null
+                }
+            },
+            "compile":{
+                "True": "scoreboard objectives add %[1] dummy"
+            }
         }
     }
 }

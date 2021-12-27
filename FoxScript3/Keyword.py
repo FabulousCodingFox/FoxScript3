@@ -1,4 +1,12 @@
 
+def getFailSafe(iter,index,failreplace):
+    try:
+        return iter[index]
+    except IndexError:
+        return failreplace
+
+
+
 
 class Keyword:
     def __init__(self,config:dict) -> None:
@@ -37,5 +45,14 @@ class Keyword:
                 elif "!=" in stmt:
                     if not syntax[stmt.split("!=")[0]] != stmt.split("!=")[1]:valid=False
             if valid:
-                self.result = self.compile[case].replace("%[overflow]"," ".join(args[1:]))
+                self.result=self.compile[case]
+                for text1,text2 in (
+                    ("%[overflow]"," ".join(args[1:])),
+                    ("%[1]",getFailSafe(args,0,"")),
+                    ("%[2]",getFailSafe(args,1,"")),
+                    ("%[3]",getFailSafe(args,2,"")),
+                    ("%[4]",getFailSafe(args,3,"")),
+                    ("%[5]",getFailSafe(args,4,""))
+                ):self.result=self.result.replace(text1,text2)
+
                 return True

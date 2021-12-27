@@ -1,7 +1,7 @@
 import Compiler
 
-projectPath = ".."
-compilePath = ".."
+projectPath = "C:/Users/fabif/Desktop/FoxScriptV3/project-example"
+compilePath = "C:/Users/fabif/Desktop/FoxScriptV3/compiled"
 
 compiler = Compiler.Compiler(projectPath,compilePath)
 compiler.readProjectFiles()
