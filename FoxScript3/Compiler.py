@@ -1,4 +1,4 @@
-import logging,json,os,McFunction
+import logging,json,os,McFunction,Keyword
 
 _file_ = __file__.replace("\\","/")
 _dir_ = _file_.replace(_file_.split("/")[-1],"")
@@ -42,6 +42,10 @@ class Compiler:
 
         if self.fs_version!=self.project_config["FS3-VERSION"]:logging.warn(f"Project: Versions dont match! The Programm is written for FoxScript3 Version {self.project_config['FS3-VERSION']} and the Compiler is on Version {self.fs_version}")
 
+        self.keywords = []
+        for kwKey in self.compiler_config["KEYWORDS"]:
+            self.keywords.append(Keyword.Keyword(self.compiler_config["KEYWORDS"][kwKey]))
+
     def readProjectFiles(self) -> list:
         allFiles = []
 
@@ -75,7 +79,7 @@ class Compiler:
     
     def compile(self) -> None:
         for f in self.allFiles:
-            f.compile()
+            f.compile(self.keywords)
             logging.info(f"Project: Compiling File {f.namespace}:{f.path}")
 
     
