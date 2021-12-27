@@ -20,8 +20,9 @@ The project must have the following folder structure:
 │
 ├─namespace
 │ ├─somefile.fs3
-│ ├─anotherfile.fs3
+│ ├─anotherfile.mcfunction
 │ └───afolder
 │     └─yetanotherfile.foxscript
 ```
 
+All files that can be read by Foxscript end with ".fs3", ".mcfunction" or ".foxscript"
