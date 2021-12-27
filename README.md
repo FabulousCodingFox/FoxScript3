@@ -25,6 +25,9 @@ The project must have the following folder structure:
 ├─project.json
 │
 ├─namespace
+│ ├─#tags
+│ │  └─blocks
+│ │    └─myblocks.json
 │ ├─somefile.fs3
 │ ├─anotherfile.mcfunction
 │ └───afolder
