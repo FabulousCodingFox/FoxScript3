@@ -24,7 +24,7 @@ class Compiler:
     def __init__(self,project_path,compile_path) -> None:
         self.project_path=project_path
         self.compile_path=compile_path
-        self.fs_version = "3.0.5"
+        self.fs_version = "3.0.6"
 
         try:
             with open(_dir_+"compiler.json") as file:self.compiler_config=json.load(file)

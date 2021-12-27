@@ -46,6 +46,8 @@ class McFunction:
 
             if linenumber in blockedlines:
                 continue
+
+            line=line.replace("function this",f"function {self.namespace}:{self.path}")
             
             if "function{" in line.replace(" ",""):
                 text=""
