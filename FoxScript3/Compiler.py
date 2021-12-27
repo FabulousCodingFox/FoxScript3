@@ -24,7 +24,7 @@ class Compiler:
     def __init__(self,project_path,compile_path) -> None:
         self.project_path=project_path
         self.compile_path=compile_path
-        self.fs_version = "3.0.4"
+        self.fs_version = "3.0.5"
 
         try:
             with open(_dir_+"compiler.json") as file:self.compiler_config=json.load(file)
@@ -76,14 +76,11 @@ class Compiler:
 
         return allFiles
 
-    
     def compile(self) -> None:
         for f in self.allFiles:
             addFunctions = f.compile(self.keywords)
             self.allFiles=self.allFiles+addFunctions
             
-
-    
     def create(self) -> None:
 
         for (root,dirs,files) in os.walk(self.compile_path,topdown=False):
@@ -110,6 +107,9 @@ class Compiler:
             p = fp + file.name + ".mcfunction"
             with open(p,"w") as ignore:
                 ignore.write(file.compiled)
+
+        logging.info("Project: Created Function-Files")
+
         
         fp = self.compile_path
         if fp[len(fp)-1] != "/": fp+="/"
@@ -117,7 +117,25 @@ class Compiler:
         with open(fp+"pack.mcmeta","w") as ignore:
             ignore.write("{\"pack\": {\"pack_format\": "+self.compiler_config["pack_format"][self.project_config["MC-VERSION"]]+",\"description\": \""+self.project_config["Description"]+"\"}}")
 
+        os.mkdir(fp+"data/minecraft/")
+        os.mkdir(fp+"data/minecraft/tags/")
+        os.mkdir(fp+"data/minecraft/tags/functions/")
+
+        with open(fp+"data/minecraft/tags/functions/tick.json","w") as tick:
+            with open(fp+"data/minecraft/tags/functions/load.json","w") as load:
+                tickcontent={"values":[],"replace":False}
+                loadcontent={"values":[],"replace":False}
+                for schedule in self.project_config["schedules"]:
+                    if schedule["timing"]=="load":
+                        loadcontent["values"].append(schedule["path"])
+                    elif schedule["timing"]=="tick":
+                        tickcontent["values"].append(schedule["path"])
+                json.dump(loadcontent, load)
+                json.dump(tickcontent, tick)
         logging.info("Project: Created Files")
+
+
+
 
     def main(self):
         self.readProjectFiles()
