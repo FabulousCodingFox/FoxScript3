@@ -49,34 +49,31 @@ class McFunction:
             if linenumber in blockedlines:
                 continue
 
-            line=line.replace("function this",f"function {self.namespace}:{self.path}")
+
+            #line=line.replace("function this",f"function {self.namespace}:{self.path}")
             
             if "function{" in line.replace(" ",""):
                 text=""
                 level=0
+                slot=reserved.new()
 
                 for nlinenumber in range(linenumber+1,len(self.raw.split("\n"))):
-                    if line.lstrip().startswith("{"):
-                        level+=1
-                    elif line.lstrip().startswith("}"):
-                        level-=1
+                    nline=self.raw.split("\n")[nlinenumber].lstrip()
+                    #print(nline,":",level)
+                    if nline.lstrip().startswith("{") or nline.rstrip().endswith("{"):
+                        level=level+1
+                    elif nline.lstrip().startswith("}"):
+                        level=level-1
                         if(level<=-1):
                             break
-                #addFunctions.append(McFunction("\n".join(self.raw.split("\n")[linenumber:nlinenumber])))
-                #self.raw.split("\n")[linenumber+1:nlinenumber]
-                #[i.lstrip() for i in self.raw.split("\n")[linenumber+1:nlinenumber]]
-                #print("\n".join([i.lstrip() for i in self.raw.split("\n")[linenumber+1:nlinenumber]]))
-
-                
-
-            
-
-
+                    if level==0:
+                        nline=nline.replace("function this",f"function {self.namespace}:{self.sourcepath+'_'+str(slot)}")
+                    text=text+nline+"\n"
 
                 addFunctions.append(McFunction(
-                    "\n".join([i.lstrip() for i in self.raw.split("\n")[linenumber+1:nlinenumber]]),
+                    text,#"\n".join([i.lstrip() for i in self.raw.split("\n")[linenumber+1:nlinenumber]]),
                     self.namespace,
-                    self.sourcepath+"_"+str(reserved.new()),
+                    self.sourcepath+"_"+str(slot),
                     self.sourcepath
                 ))
 
@@ -84,11 +81,8 @@ class McFunction:
 
                 blockedlines=blockedlines+list(range(linenumber,nlinenumber+1))
 
-               
                 addFunctions=addFunctions+addFunctions[-1].compile(keywords,reserved)
 
-
-                
             final = final + res + "\n"
 
         self.compiled=final
