@@ -32,12 +32,13 @@ class Compiler:
     def __init__(self,project_path,compile_path) -> None:
         self.project_path=project_path
         self.compile_path=compile_path
-        self.fs_version = "3.1.0"
 
         try:
             with open(_dir_+"compiler.json") as file:self.compiler_config=json.load(file)
         except FileNotFoundError:self.stop("The Compiler doesnt have a compiler.json")
         logging.info("Compiler: Validated all contents of compiler.json")
+
+        self.fs_version = self.compiler_config["VERSION"]
 
         try:
             with open(os.path.join(self.project_path,"project.json")) as file:self.project_config=json.load(file)
@@ -154,11 +155,8 @@ class Compiler:
                 if tag.lower()=="#tags":
                     dir = os.path.join(root,tag).replace("\\","/")+"/"
                     namespace = dir.split("/")[-3]
-                    logging.debug("Found tag "+dir)
                     os.mkdir(f"{self.compile_path}/data/{namespace}/tags/")
                     target=f"{self.compile_path}/data/{namespace}/tags/"
-                    #shutil.copy(dir,target)
-                    #os.rename(f"{self.compile_path}/data/{namespace}/#tags/","tags")
 
                     for (nroot,ndirs,nfiles) in os.walk(dir,topdown=True):
                         for ndir in ndirs:
