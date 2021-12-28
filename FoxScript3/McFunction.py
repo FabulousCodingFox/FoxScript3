@@ -1,13 +1,15 @@
 import logging
 
 class McFunction:
-    def __init__(self,raw:str,namespace:str,path:str) -> None:
+    def __init__(self,raw:str,namespace:str,path:str,sourcepath:str) -> None:
         self.raw=raw
         self.namespace=namespace
         self.path=path
         self.compiled=""
         self.name = path.replace("\\","/").split("/")[-1]
-    def compile(self,keywords) -> None:
+        self.sourcepath=sourcepath
+
+    def compile(self,keywords,reserved) -> None:
         logging.info(f"Project: Compiling File {self.namespace}:{self.path}")
 
         addFunctions = []
@@ -65,12 +67,17 @@ class McFunction:
                 #[i.lstrip() for i in self.raw.split("\n")[linenumber+1:nlinenumber]]
                 #print("\n".join([i.lstrip() for i in self.raw.split("\n")[linenumber+1:nlinenumber]]))
 
+                
+
+            
+
 
 
                 addFunctions.append(McFunction(
                     "\n".join([i.lstrip() for i in self.raw.split("\n")[linenumber+1:nlinenumber]]),
                     self.namespace,
-                    self.path+"_"
+                    self.sourcepath+"_"+str(reserved.new()),
+                    self.sourcepath
                 ))
 
                 res = res[:res.find("function")]+f"function {addFunctions[-1].namespace}:{addFunctions[-1].path}"
@@ -78,7 +85,7 @@ class McFunction:
                 blockedlines=blockedlines+list(range(linenumber,nlinenumber+1))
 
                
-                addFunctions=addFunctions+addFunctions[-1].compile(keywords)
+                addFunctions=addFunctions+addFunctions[-1].compile(keywords,reserved)
 
 
                 

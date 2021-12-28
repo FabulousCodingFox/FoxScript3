@@ -1,9 +1,17 @@
-import logging,json,os,McFunction,Keyword,shutil
+import logging,json,os,McFunction,Keyword,time
 
 _file_ = __file__.replace("\\","/")
 _dir_ = _file_.replace(_file_.split("/")[-1],"")
 
 logging.basicConfig(filename=_dir_+"runtime.log", encoding='utf-8', level=logging.DEBUG,filemode="w")
+
+class ReservedList:
+    def __init__(self,original) -> None:
+        self.reserved=0
+        self.original=original
+    def new(self) -> int:
+        self.reserved+=1
+        return self.reserved
 
 class Compiler:
     def stop(self,cause="A compiling Error occured"):
@@ -24,7 +32,7 @@ class Compiler:
     def __init__(self,project_path,compile_path) -> None:
         self.project_path=project_path
         self.compile_path=compile_path
-        self.fs_version = "3.0.7"
+        self.fs_version = "3.1.0"
 
         try:
             with open(_dir_+"compiler.json") as file:self.compiler_config=json.load(file)
@@ -71,7 +79,7 @@ class Compiler:
                         p=p+file.split(".")[-2]
                         p=p.replace(n+"/","")
 
-                        allFiles.append(McFunction.McFunction(f.read(),n,p)) 
+                        allFiles.append(McFunction.McFunction(f.read(),n,p,p)) 
 
                         logging.info(f"Project: Reading File {n}:{p}")
 
@@ -81,7 +89,8 @@ class Compiler:
 
     def compile(self) -> None:
         for f in self.allFiles:
-            addFunctions = f.compile(self.keywords)
+            reserved = ReservedList(f.path)
+            addFunctions = f.compile(self.keywords,reserved)
             self.allFiles=self.allFiles+addFunctions
             
     def create(self) -> None:
@@ -97,7 +106,7 @@ class Compiler:
             fp = self.compile_path
             if fp[len(fp)-1] != "/": fp+="/"
 
-            path = file.path.split()
+            path = file.path.split("/")
             path.insert(0,"data")
             path.insert(1,file.namespace)
             path.insert(2,"functions")
@@ -162,7 +171,9 @@ class Compiler:
         logging.info("Project: Moved tags to the right loacation")
 
     def main(self):
+        STARTTIME=time.perf_counter()
         self.readProjectFiles()
         self.compile()
         self.create()
+        logging.info(f"FINISHED: Compiling took {time.perf_counter()-STARTTIME} Seconds!")
 
