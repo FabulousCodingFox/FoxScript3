@@ -95,6 +95,11 @@ class Compiler:
             self.allFiles=self.allFiles+addFunctions
             
     def create(self) -> None:
+        copyrighttext=f"""###########################################################################################################################
+# Compiled using FoxScriptV3(https://github.com/FabulousCodingFox/FoxScript3)                                             #
+# Compiler Version {self.compiler_config['VERSION']}{(103-len(self.compiler_config['VERSION']))*" "}#
+# {self.project_string}{(120-len(self.project_string))*" "}#
+###########################################################################################################################\n"""
 
         for (root,dirs,files) in os.walk(self.compile_path,topdown=False):
             for file in files:
@@ -119,7 +124,7 @@ class Compiler:
             
             p = fp + file.name + ".mcfunction"
             with open(p,"w") as ignore:
-                ignore.write(file.compiled)
+                ignore.write(copyrighttext+file.compiled)
 
         logging.info("Project: Created Function-Files")
 
