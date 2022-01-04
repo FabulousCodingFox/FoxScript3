@@ -1,0 +1,5 @@
+say [INFO]: Hi
+
+execute run function main:main_1
+
+say [INFO]: Hallo
