@@ -1,5 +1,11 @@
 import os,logging,json
 
+import tkinter
+from tkinter import filedialog
+
+rootW=tkinter.Tk()
+rootW.withdraw()
+
 _file_ = __file__.replace("\\","/")
 _dir_ = _file_.replace(_file_.split("/")[-1],"")
 logging.basicConfig(filename=_dir_+"runtime.log", encoding='utf-8', level=logging.DEBUG,filemode="w")
@@ -11,7 +17,7 @@ def stop(err):
 def getFailSafe(iter,index,failreplace):
     try:
         return iter[index]
-    except IndexError:
+    except (IndexError, KeyError):
         return failreplace
 
 class ReservedCounter:
@@ -157,7 +163,10 @@ class Project:
         os.mkdir(os.path.join(self.config["TARGET"]["path"]["datapack"],"data"))
 
         with open(os.path.join(self.config["TARGET"]["path"]["datapack"],"pack.mcmeta"),"w") as file:
-            file.write("{\"pack\": {\"pack_format\": "+"18"+",\"description\": \""+self.config["INFO"]["description"]+"\"}}")
+            pack_format=getFailSafe(self.compiler.compiler_config["pack_format"],self.config["TARGET"]["version"]["mc"],False)
+            if pack_format!=False:file.write("{\"pack\": {\"pack_format\": "+"18"+",\"description\": \""+self.config["INFO"]["description"]+"\"}}")
+            else:
+                stop(f"[Project] The targeted MC Version {self.config['TARGET']['version']['mc']} isnt supported! Use one of the supported ones: {str(list(self.compiler.compiler_config['pack_format'].keys()))}")
         
         for folder in os.listdir(self.path):
             if os.path.isdir(os.path.join(self.path,folder)) and not folder.startswith("#"):
@@ -174,8 +183,44 @@ class Project:
 
                     with open(p,"w") as file:
                         file.write(mcfunc.content)
+                
+                logging.info("[Project] Moving folders (tags,etc.)")
+                
+                for folder in os.listdir(os.path.join(self.path,self.namespaces[-1].name)):
+                    if os.path.isdir(os.path.join(self.path,self.namespaces[-1].name,folder)) and folder in ["advancements","item_modifiers","loot_tables","predicates","recipes","structures","tags","dimension","dimension_type","worldgen"]:
+                        target=os.path.join(path,folder)
+                        source=os.path.join(self.path,self.namespaces[-1].name,folder)
+                        os.mkdir(target)
+                        for (nroot,ndirs,nfiles) in os.walk(source,topdown=True):
+                            for ndir in ndirs:
+                                pt=str(os.path.join(nroot,ndir).replace("\\","/").replace(source.replace("\\","/"),"")).replace("\\","/")
+                                if pt.startswith("/"):pt=pt[1:]
+                                os.mkdir(os.path.join(target,pt))
+                            for nfile in nfiles:
+                                pt=str(os.path.join(nroot,nfile).replace("\\","/").replace(source.replace("\\","/"),"")).replace("\\","/")
+                                if pt.startswith("/"):pt=pt[1:]
+                                with open(os.path.join(nroot,nfile),"r") as original:
+                                    with open(os.path.join(target,pt),"w") as new:
+                                        new.write(original.read())
+                                
+        os.mkdir(os.path.join(self.config["TARGET"]["path"]["datapack"],"data","minecraft"))
+        os.mkdir(os.path.join(self.config["TARGET"]["path"]["datapack"],"data","minecraft","tags"))
+        os.mkdir(os.path.join(self.config["TARGET"]["path"]["datapack"],"data","minecraft","tags","functions"))
 
+        
+        logging.info("[Project] Creating tick.json and load.json")
+        with open(os.path.join(self.config["TARGET"]["path"]["datapack"],"data","minecraft","tags","functions","tick.json"),"w") as tickFile:
+            with open(os.path.join(self.config["TARGET"]["path"]["datapack"],"data","minecraft","tags","functions","load.json"),"w") as loadFile:
+                tick={"values":[],"replace":False}
+                load={"values":[],"replace":False}
 
+                for schedule in self.config["SCHEDULES"]:
+                    if schedule["timing"]=="tick":tick["values"].append(schedule["path"])
+                    elif schedule["timing"]=="load":load["values"].append(schedule["path"])
+                
+                json.dump(load,loadFile)
+                json.dump(tick,tickFile)
+        
 
     def validateProjectDotJson(self):
         if os.path.exists(os.path.join(self.path,"project.json")):
@@ -287,6 +332,10 @@ class Compiler:
         logging.info("[Compiler] Generated custom Keywords "+str([i.id for i in self.keywords]))
 
 if __name__=="__main__":
+
+    filedialog.askdirectory(mustexist=True,title="Choose the Folder containing project.json")
+
+
     path="/".join(_dir_.split("/")[:-2])+"/"
     projekt = Project(os.path.realpath(os.path.join(path,"project-example")),Compiler())
     projekt.compile()
