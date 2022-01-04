@@ -1,8 +1,0 @@
-log info Hi
-dummy test
-
-execute run function {
-    execute run function {
-         say Hi
-    }
-}
