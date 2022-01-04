@@ -31,7 +31,7 @@ class McFunction:
         self.reservedCounter=None
     
     def compile(self,compiler):
-        logging.info(f"Project: Compiling File {self.namespace.name}:{self.path}")
+        logging.info(f"[McFunction] Compiling File {self.namespace.name}:{self.path}")
 
         final = ""
 
@@ -114,7 +114,7 @@ class Namespace:
         self.mcfunctions.append(func)
     
     def compile(self,compiler):
-        logging.info("Compiling namespace "+self.name)
+        logging.info("[Namespace] Compiling namespace "+self.name)
         if os.path.exists(os.path.join(self.path,"functions")) and os.path.isdir(os.path.join(self.path,"functions")):
             for root,dirs,files in os.walk(os.path.join(self.path,"functions")):
                 for file in files:
@@ -134,14 +134,16 @@ class Namespace:
                     self.mcfunctions[-1].compile(compiler)
 
 class Project:
-    def __init__(self,path) -> None:
+    def __init__(self,path,compiler) -> None:
         self.namespaces=[]
         self.path=path
+        self.compiler=compiler
 
         self.validateProjectDotJson()
     
-    def compile(self,compiler):
-        logging.info("Clearing Target Folders")
+    def compile(self):
+        compiler=self.compiler
+        logging.info("[Project] Clearing Target Folders")
 
         for folder in [self.config["TARGET"]["path"]["datapack"],self.config["TARGET"]["path"]["texturepack"]]:
             for root,dirs,files in os.walk(folder,topdown=False):
@@ -149,6 +151,8 @@ class Project:
                     os.remove(os.path.join(root,file))
                 for dir in dirs:
                     os.rmdir(os.path.join(root,dir))
+
+        logging.info("[Project] Generating&Compiling Namespaces")
         
         os.mkdir(os.path.join(self.config["TARGET"]["path"]["datapack"],"data"))
 
@@ -157,7 +161,7 @@ class Project:
         
         for folder in os.listdir(self.path):
             if os.path.isdir(os.path.join(self.path,folder)) and not folder.startswith("#"):
-                logging.info("Found namespace "+folder)
+                logging.info("[Project] Found namespace "+folder)
                 self.namespaces.append(Namespace(os.path.join(self.path,folder),folder))
                 self.namespaces[-1].compile(compiler)
 
@@ -190,8 +194,37 @@ class Project:
                 a=self.config["TARGET"]["path"]["datapack"]
                 a=self.config["TARGET"]["path"]["texturepack"]
                 a=self.config["SCHEDULES"]
-            except KeyError as err:stop("The project.json does not contain the following: "+err)
-        else:stop("The path does not contain a project.json")
+            except KeyError as err:stop("[Project] The project.json does not contain the following: "+err)
+        else:stop("[Project] The path does not contain a project.json")
+
+        self.checkCompatibility(self.config["TARGET"]["version"]["fs"],self.compiler.compiler_config["VERSION"])
+        
+        path="/".join(_dir_.split("/")[:-2])
+        self.config["TARGET"]["path"]["datapack"]=self.config["TARGET"]["path"]["datapack"].replace("(BASEDIR)",path)
+        self.config["TARGET"]["path"]["texturepack"]=self.config["TARGET"]["path"]["texturepack"].replace("(BASEDIR)",path)
+
+        if not os.path.exists(self.config["TARGET"]["path"]["datapack"]):stop("[Project] The path for the Target Datapack doesnt exist")
+        if not os.path.exists(self.config["TARGET"]["path"]["texturepack"]):stop("[Project] The path for the Target Texturepack doesnt exist")
+
+    def checkCompatibility(self,projVersion:str,compVersion:str):
+        master=projVersion.split(".")[0]
+        version=projVersion.split(".")[1]
+        iteration=projVersion.split(".")[2].split("-")[0]
+        isAlpha=False if getFailSafe(projVersion.split(".")[2].split("-"),1,False)==False else True
+
+        comp_master=compVersion.split(".")[0]
+        comp_version=compVersion.split(".")[1]
+        comp_iteration=compVersion.split(".")[2].split("-")[0]
+        comp_isAlpha=False if getFailSafe(compVersion.split(".")[2].split("-"),1,False)==False else True
+
+        if comp_isAlpha:logging.warning("[Version] The Compiler is an Alpha build and may not support all features or may break")
+        if isAlpha:logging.warning("[Version] The Project is for an Alpha build and may not be read correctly")
+
+        if master!=comp_master:stop(f"[Version] The Compiler is for Foxscript{comp_master} and the project is for FoxScript{master}. That Error is literally impossible")
+
+        if version!=comp_version:stop(f"[Version] Either the Compiler(Version {comp_master}.{comp_version}) or the Project(Version {master}.{version}) is outdated and doesnt support the featured features.")
+
+        if iteration!=comp_iteration:logging.warning(f"[Version] The iterations dont match! Compiler is on Iteration {comp_iteration} and the Project is made for Iteration {iteration}")
 
 class Keyword:
     def __init__(self,config:dict) -> None:
@@ -245,13 +278,15 @@ class Compiler:
     def __init__(self) -> None:
         try:
             with open(os.path.join(_dir_,"compiler.json")) as file:self.compiler_config=json.load(file)
-        except FileNotFoundError:self.stop("The Compiler doesnt have a compiler.json")
-        logging.info("Compiler: Validated all contents of compiler.json")
+        except FileNotFoundError:self.stop("[Compiler] Couldnt find compiler.json in the source directory. Is it up-to-date?")
+        logging.info("[Compiler] Validated all contents of compiler.json")
 
         self.keywords = []
         for kwKey in self.compiler_config["KEYWORDS"]:
             self.keywords.append(Keyword(self.compiler_config["KEYWORDS"][kwKey]))
+        logging.info("[Compiler] Generated custom Keywords "+str([i.id for i in self.keywords]))
 
 if __name__=="__main__":
-    projekt = Project("..\\project-example")
-    projekt.compile(Compiler())
+    path="/".join(_dir_.split("/")[:-2])+"/"
+    projekt = Project(os.path.realpath(os.path.join(path,"project-example")),Compiler())
+    projekt.compile()

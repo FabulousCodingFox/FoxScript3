@@ -1,1 +1,11 @@
-ERROR:root:The path does not contain a project.json
+INFO:root:[Compiler] Validated all contents of compiler.json
+INFO:root:[Compiler] Generated custom Keywords ['log', 'dummy']
+WARNING:root:[Version] The Compiler is an Alpha build and may not support all features or may break
+WARNING:root:[Version] The Project is for an Alpha build and may not be read correctly
+WARNING:root:[Version] The iterations dont match! Compiler is on Iteration 0 and the Project is made for Iteration 0 
+INFO:root:[Project] Clearing Target Folders
+INFO:root:[Project] Generating&Compiling Namespaces
+INFO:root:[Project] Found namespace main
+INFO:root:[Namespace] Compiling namespace main
+INFO:root:[McFunction] Compiling File main:main
+INFO:root:[McFunction] Compiling File main:main_1
