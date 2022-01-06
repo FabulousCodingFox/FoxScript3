@@ -1,0 +1,19 @@
+{
+    "id":"uranium_ore",
+    "DisplayName":"Uranium Ore",
+    "base":"minecraft:glass",
+    "sound":{
+        "break":"minecraft:block.stone.break",
+        "place":"minecraft:block.stone.break"
+    },
+    "assets":{
+        "model":"model.json"
+    },
+
+    "functions":{
+        "place":"",
+        "break":"effect give @p minecraft:nausea 15 50 true"
+    },
+
+    "dropItem":true
+}

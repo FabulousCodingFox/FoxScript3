@@ -8,5 +8,12 @@ INFO:root:[Project] Found namespace main
 INFO:root:[Namespace] Compiling namespace main
 INFO:root:[McFunction] Compiling File main:main
 INFO:root:[McFunction] Compiling File main:main_1
+INFO:root:[Namespace] Found custom block luckyblock
+INFO:root:[Namespace] Found custom block uranium_ore
 INFO:root:[Project] Moving folders (tags,etc.)
+INFO:root:Generating TexturePack
+INFO:root:[Customblock] luckyblock Generating/modifying the model + textures
+INFO:root:[Customblock] luckyblock can now be found under the CustomModelData of 1
+INFO:root:[Customblock] uranium_ore Generating/modifying the model + textures
+INFO:root:[Customblock] uranium_ore can now be found under the CustomModelData of 2
 INFO:root:[Project] Creating tick.json and load.json
