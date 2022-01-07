@@ -111,15 +111,21 @@ class McFunction:
 
             final = final + res + "\n"
 
-        self.content=final
+        
+
+        copyrighttext=f"""###########################################################################################################################\n# Compiled using FoxScriptV3(https://github.com/FabulousCodingFox/FoxScript3)                                             #\n# Compiler Version {compiler.compiler_config["VERSION"]}{(103-len(compiler.compiler_config["VERSION"]))*" "}#\n# {self.namespace.project.project_string}{(120-len(self.namespace.project.project_string))*" "}#\n# Function {self.namespace.name}:{self.path} {(109-len(self.namespace.name+self.path))*" "}#\n###########################################################################################################################\n"""
+
+        self.content=copyrighttext + final
+
 
 #A dataclass managing Namespaces aka Wrappers for FUnctions, Generators, etc.
 class Namespace:
-    def __init__(self,path,name) -> None:
+    def __init__(self,path,name,project) -> None:
         self.mcfunctions=[]
         self.customblocks=[]
         self.path=path
         self.name=name
+        self.project=project
     
     def addFunction(self,func):
         self.mcfunctions.append(func)
@@ -166,6 +172,8 @@ class Project:
         self.compiler=compiler
 
         self.validateProjectDotJson()
+
+        self.project_string = f"""{self.config["INFO"]["name"]} by {", ".join(self.config["INFO"]["authors"])}:  {self.config["INFO"]["description"]}"""
     
     def compile(self):
         compiler=self.compiler
@@ -191,17 +199,24 @@ class Project:
         for folder in os.listdir(self.path):
             if os.path.isdir(os.path.join(self.path,folder)) and not folder.startswith("#"):
                 logging.info("[Project] Found namespace "+folder)
-                self.namespaces.append(Namespace(os.path.join(self.path,folder),folder))
+                self.namespaces.append(Namespace(os.path.join(self.path,folder),folder,self))
                 self.namespaces[-1].compile(compiler)
 
                 path = os.path.join(os.path.join(self.config["TARGET"]["path"]["datapack"],"data"),self.namespaces[-1].name)
 
                 os.mkdir(path)
+                os.mkdir(os.path.join(path,"functions"))
 
                 for mcfunc in self.namespaces[-1].mcfunctions:
-                    p=os.path.join(path,mcfunc.path)
+                    p=os.path.join(path,"functions",mcfunc.path)
 
-                    with open(p,"w") as file:
+                    subdirs=mcfunc.path.split("/")
+                    subdirs.pop()
+
+                    for instancenum,instance in enumerate(subdirs):
+                        if not os.path.exists(os.path.join(path,"functions","/".join(subdirs[:instancenum+1]))): os.mkdir(os.path.join(path,"functions","/".join(subdirs[:instancenum+1])))
+
+                    with open(p+".mcfunction","w") as file:
                         file.write(mcfunc.content)
                 
                 logging.info("[Project] Moving folders (tags,etc.)")
@@ -471,6 +486,18 @@ class Compiler:
         for kwKey in self.compiler_config["KEYWORDS"]:
             self.keywords.append(Keyword(self.compiler_config["KEYWORDS"][kwKey]))
         logging.info("[Compiler] Generated custom Keywords "+str([i.id for i in self.keywords]))
+
+print("""
+==========================================================================================================================
+FoxScript 3 - Credits
+
+Programming:
+FabulousFox
+
+Optional Dependencies:
+Local-WASD by Miestrode to detect wasd Button Presses: https://github.com/Miestrode/local-wasd (modified version)
+==========================================================================================================================
+""")
 
 if __name__=="__main__":
     with open(os.path.join(_dir_,"session.json"),"r") as file:data=json.load(file)
