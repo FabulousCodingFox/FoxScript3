@@ -1,0 +1,1 @@
+give @p minecraft:item_frame{EntityTag:{Tags:["customblocks","customblocks.uranium_ore"],Invisible:1b},CustomModelData:2,display:{Name:"{\"text\":\"Uranium Ore\",\"italic\":\"false\"}"}}

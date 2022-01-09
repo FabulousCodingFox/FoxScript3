@@ -1,0 +1,1 @@
+scoreboard players add count exampleticks 1

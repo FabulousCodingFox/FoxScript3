@@ -1,0 +1,23 @@
+INFO:root:[Compiler] Validated all contents of compiler.json
+INFO:root:[Compiler] Generated custom Keywords ['log', 'dummy']
+INFO:root:[Project] Clearing Target Folders
+INFO:root:[Project] Generating&Compiling Namespaces
+INFO:root:[Project] Found namespace main
+INFO:root:[Namespace] Compiling namespace main
+INFO:root:[McFunction] Compiling File main:load
+INFO:root:[McFunction] Compiling File main:main
+INFO:root:[McFunction] Compiling File main:main_1
+INFO:root:[McFunction] Compiling File main:main_2
+INFO:root:[McFunction] Compiling File main:tick
+INFO:root:[McFunction] Compiling File main:a/b/c
+INFO:root:[Namespace] Found custom block luckyblock
+INFO:root:[Namespace] Found custom block uranium_ore
+INFO:root:[Project] Moving folders (tags,etc.)
+INFO:root:Generating TexturePack
+INFO:root:[Customblock] luckyblock Generating/modifying the model + textures
+INFO:root:[Customblock] luckyblock can now be found under the CustomModelData of 1
+INFO:root:[Customblock] uranium_ore Generating/modifying the model + textures
+INFO:root:[Customblock] uranium_ore can now be found under the CustomModelData of 2
+INFO:root:[Project] Adding Dependencies
+INFO:root:[Project] Installing dependency LocalWASD by Miestrode
+INFO:root:[Project] Creating tick.json and load.json

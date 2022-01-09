@@ -1,0 +1,1 @@
+give @p minecraft:item_frame{EntityTag:{Tags:["customblocks","customblocks.luckyblock"],Invisible:1b},CustomModelData:1,display:{Name:"{\"text\":\"Lucky Block\",\"italic\":\"false\"}"}}

@@ -1,0 +1,19 @@
+{
+    "id":"luckyblock",
+    "DisplayName":"Lucky Block",
+    "base":"minecraft:glass",
+    "sound":{
+        "break":"minecraft:block.stone.break",
+        "place":"minecraft:block.stone.break"
+    },
+    "assets":{
+        "model":"model.json"
+    },
+
+    "functions":{
+        "place":"say Hope you win sth better than dirt!",
+        "break":"give @p diamond"
+    },
+
+    "dropItem":false
+}

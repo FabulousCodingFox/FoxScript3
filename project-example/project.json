@@ -1,0 +1,35 @@
+{
+    "INFO":{
+        "name":"Example",
+        "description":"An Example-Project",
+        "authors":["FabulousFox"],
+        "id":"ex"
+    },
+
+    "TARGET":{
+        "version":{
+            "mc":"1.18.1",
+            "fs":"3.2.0"
+        },
+        "path":{
+            "datapack":"(BASEDIR)/target-dp",
+            "texturepack":"(BASEDIR)/target-rp"
+        }
+    },
+
+    "SCHEDULES":[
+        {
+            "timing":"load",
+            "path":"main:load"
+        },
+        {
+            "timing":"tick",
+            "path":"main:tick"
+        }
+    ],
+
+    "DEPENDENCIES":{
+        "LocalWASD":true,
+        "Nexus":false
+    }
+}

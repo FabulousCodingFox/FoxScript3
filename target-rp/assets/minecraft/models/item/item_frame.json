@@ -1,0 +1,1 @@
+{"parent": "item/generated", "textures": {"layer0": "item/item_frame"}, "overrides": [{"predicate": {"custom_model_data": 1}, "model": "customblocks/luckyblock/model"}, {"predicate": {"custom_model_data": 2}, "model": "customblocks/uranium_ore/model"}]}
